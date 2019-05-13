@@ -6,7 +6,19 @@ export LC_ALL=en_US.UTF-8
 export LO_VERSION="6.2.4.1"
 
 # install basic stuff required for compilation
-yum-config-manager --enable epel
+# yum-config-manager --enable epel
+
+
+yum update -y && yum install -y \
+    https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+    https://extras.getpagespeed.com/release-el7-latest.rpm &&\
+    yum install -y brotli \
+    java-1.8.0-openjdk-devel \
+    libcairo.so.2 \
+    binutils \
+    libXinerama \
+    tar
+
 yum install -y \
     autoconf \
     which \
@@ -58,6 +70,7 @@ yum install -y liblangtag && cp -r /usr/share/liblangtag /usr/local/share/liblan
 # curl -L http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/c/ccache-3.3.4-1.el7.x86_64.rpm && \
 # yum install -y ccache.rpm
 
+# https://github.com/LibreOffice/core/archive/libreoffice-6.2.4.1.tar.gz
 # clone libreoffice sources
 curl -L https://github.com/LibreOffice/core/archive/libreoffice-${LO_VERSION}.tar.gz | tar -xz
 mv core-libreoffice-${LO_VERSION} libreoffice
@@ -144,13 +157,13 @@ rm -rf ./instdir/share/gallery \
     ./instdir/NOTICE
 
 # archive
-tar -cvf lo.tar instdir
+tar -cvf lo.tar lo
 
 # install brotli first https://www.howtoforge.com/how-to-compile-brotli-from-source-on-centos-7/
 brotli --best --force ./lo.tar
 
 # test if compilation was successful
 echo "hello world" > a.txt
-./instdir/program/soffice --headless --invisible --nodefault --nofirststartwizard \
+./lo/program/soffice --headless --invisible --nodefault --nofirststartwizard \
     --nolockcheck --nologo --norestore --convert-to pdf --outdir $(pwd) a.txt
 
